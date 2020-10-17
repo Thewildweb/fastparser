@@ -18,8 +18,9 @@ setuptools.setup(
         "Development Status :: 3 - Alpha",
         "Operating System :: POSIX :: Linux",
     },
-    python_requires=">=3.6",
+    python_requires=">=3.8",
     install_requires=[
         "fuzzywuzzy[speedups]",
         "selectolax",
+    ]
 )
