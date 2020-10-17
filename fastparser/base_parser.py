@@ -25,7 +25,6 @@ class Ahref:
         self.absolute_url: str = make_absolute(self.href, self.base_url)
         self.text: str = href_node.text()
         self.parsed = urlparse(self.absolute_url)
-        self.absolute_url: str = make_absolute(self.href, self.base_url)
         self.is_internal: bool = self.parsed.netloc == urlparse(self.base_url).netloc
         self.attributes: Dict[str, str] = href_node.attributes
 
@@ -42,7 +41,7 @@ class Ahref:
         return [item.lower() for item in parsed.path.split("/") if len(item) > 0]
 
 
-class BaseParser:
+class BasePage:
     """The Basic HTML parser
 
     :param html: String representation of the HTML document
@@ -53,7 +52,7 @@ class BaseParser:
     next_symbol = ["volgende", "next", "meer", "more", "ouder", "older"]
     prev_symbol = ["vorige", "previous", "nieuwe", "new"]
 
-    def __init__(self, html: str, url: str):
+    def __init__(self, html: str, url: _URL):
         self.url: str = url
         self.parsed_url = urlparse(self.url)
         self.scheme_domain: str = (
@@ -63,8 +62,14 @@ class BaseParser:
         self._tree = HTMLParser(self._html_input)
         self.links: List[Ahref] = self._get_links()
 
-    def __repr(self) -> str:
-        return f"Webpage :{self.url}"
+    def __hash__(self):
+        return hash(self.url)
+
+    def __eq__(self):
+        return self.__class__ == other.__class__ and self.url == other.url
+
+    def __repr__(self) -> str:
+        return f"<Webpage: {self.url}>"
 
     def css(self, selector: _CssSelector) -> List[Node]:
         return self._tree.css(selector)
@@ -244,3 +249,5 @@ class BaseParser:
                 return_list.append(Ahref(a_node, self.url))
 
         return return_list
+
+
