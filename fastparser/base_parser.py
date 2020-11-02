@@ -18,7 +18,7 @@ class Ahref:
 
     def __init__(self, href_node: Node, base_url: _URL) -> None:
         self.href: str = href_node.attributes.get("href")
-        if self.href.startswith(("#", "mailto:", "javascript:", "tel:")):
+        if self.href.startswith and self.href.startswith(("#", "mailto:", "javascript:", "tel:")):
             raise ValueError("Not a normal url")
 
         self.base_url: str = base_url
@@ -243,7 +243,7 @@ class BasePage:
         ahrefs = self._tree.css("a[href]")
 
         for a_node in ahrefs:
-            if not a_node.attributes["href"].startswith(
+            if a_node.attributes["href"] and not a_node.attributes["href"].startswith(
                 ("#", "javascript:", "mailto:", "tel:")
             ):
                 return_list.append(Ahref(a_node, self.url))
