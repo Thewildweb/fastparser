@@ -235,7 +235,7 @@ class BasePage:
                 + " "
                 + candidate.text
             )
-            if any(["nav", "next"] in candidate_id_class):
+            if any(["nav", "next"] in candidate_id_class_text):
                 return candidate.absolute_url
 
     def _get_links(self) -> List[Ahref]:

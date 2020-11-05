@@ -1,3 +1,4 @@
+import asyncio
 from urllib.parse import urlparse, urlunparse
 from typing import Optional, Dict
 import json
@@ -147,11 +148,13 @@ class BaseSite:
         max_pages: Optional[int] = 20,
         add_links_to_sitemap: bool = True,
         export: bool = False,
+        sleep: float = 0.5,
     ):
         new_item = self.get_unvisited_item(max_depth=max_depth)
         while new_item and self.digested < max_pages:
+            await asyncio.run(sleep)
+
             r = await self.get_url(new_item.url, client)
-            print(r)
             self.digest_response(new_item, r, add_links_to_sitemap)
             run = func(self, new_item, r)
 
