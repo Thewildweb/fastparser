@@ -149,6 +149,7 @@ class BaseSite:
         add_links_to_sitemap: bool = True,
         export: bool = False,
         sleep: float = 0.5,
+        delete_pages: bool = False,
     ):
         new_item = self.get_unvisited_item(max_depth=max_depth)
         while new_item and self.digested < max_pages:
@@ -165,6 +166,10 @@ class BaseSite:
             # if func return a value break the loop
             if run:
                 break
+
+            # for big sites it is better to delete the pages
+            if delete_pages:
+                new_item.page = None
 
             new_item = self.get_unvisited_item(max_depth=max_depth)
 
