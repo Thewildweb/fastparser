@@ -1,6 +1,6 @@
 import re
-from typing import List, Tuple, Union, Optional, Dict
-from urllib.parse import urlparse, urlunparse, urljoin, ParseResult
+from typing import List, Union, Optional, Dict
+from urllib.parse import urlparse
 
 from selectolax.parser import HTMLParser
 from selectolax.parser import Node
@@ -18,7 +18,9 @@ class Ahref:
 
     def __init__(self, href_node: Node, base_url: _URL) -> None:
         self.href: str = href_node.attributes.get("href")
-        if self.href.startswith and self.href.startswith(("#", "mailto:", "javascript:", "tel:")):
+        if self.href.startswith and self.href.startswith(
+            ("#", "mailto:", "javascript:", "tel:")
+        ):
             raise ValueError("Not a normal url")
 
         self.base_url: str = base_url
@@ -65,7 +67,7 @@ class BasePage:
     def __hash__(self):
         return hash(self.url)
 
-    def __eq__(self):
+    def __eq__(self, other):
         return self.__class__ == other.__class__ and self.url == other.url
 
     def __repr__(self) -> str:
@@ -249,5 +251,3 @@ class BasePage:
                 return_list.append(Ahref(a_node, self.url))
 
         return return_list
-
-
