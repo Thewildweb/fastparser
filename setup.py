@@ -6,10 +6,10 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="fastparser",
-    version="0.1",
+    version="0.2",
     author="Erik Meijer",
     author_email="erik@thewildweb.nl",
-    description="A HTML Parser with some handy Utilities",
+    description="A HTML Parser & HTML Client with some handy Utilities",
     long_description=long_description,
     url="https://github.com/Thewildweb/fastparser",
     packages=setuptools.find_packages(),
@@ -22,5 +22,8 @@ setuptools.setup(
     install_requires=[
         "fuzzywuzzy[speedups]",
         "selectolax",
-    ]
+        "lxml",
+        "aiohttp",
+        "python-Levenshtein",
+    ],
 )

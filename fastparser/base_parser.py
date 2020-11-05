@@ -18,9 +18,7 @@ class Ahref:
 
     def __init__(self, href_node: Node, base_url: _URL) -> None:
         self.href: str = href_node.attributes.get("href")
-        if self.href.startswith and self.href.startswith(
-            ("#", "mailto:", "javascript:", "tel:")
-        ):
+        if self.href and self.href.startswith(("#", "mailto:", "javascript:", "tel:")):
             raise ValueError("Not a normal url")
 
         self.base_url: str = base_url
