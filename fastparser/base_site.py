@@ -153,7 +153,7 @@ class BaseSite:
     ):
         new_item = self.get_unvisited_item(max_depth=max_depth)
         while new_item and self.digested < max_pages:
-            await asyncio.run(sleep)
+            await asyncio.sleep(sleep)
 
             r = await self.get_url(new_item.url, client)
             self.digest_response(new_item, r, add_links_to_sitemap)
@@ -174,9 +174,7 @@ class BaseSite:
             new_item = self.get_unvisited_item(max_depth=max_depth)
 
     async def parse_sitemap(
-        self,
-        sitemap_url: str,
-        client,
+        self, sitemap_url: str, client, in_url: Optional[str] = None
     ):
         resp = await self.get_url(sitemap_url, client)
         if not resp:
@@ -188,6 +186,11 @@ class BaseSite:
 
         for url in urlset:
             link = url.find("{http://www.sitemaps.org/schemas/sitemap/0.9}loc")
+
+            if in_url:
+                if in_url not in link.text:
+                    continue
+
             new_item = SitemapItem(url=link.text, depth=10)
             self.item_to_sitemap(new_item)
 
