@@ -157,7 +157,6 @@ class SplashClient:
                 return self.http_response(text, url)
 
         except Exception as e:
-            traceback.print_exc()
             print(e)
             if tries > 0:
                 tries -= 1
