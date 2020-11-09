@@ -16,6 +16,21 @@ class FuzzyExtract:
     score: int
 
 
+def get_domain(url: str) -> _URL:
+    """gives back the domain of an url"""
+    parsed = urlparse(url)._asdict()
+
+    if not parsed["netloc"]:
+        return
+
+    if not parsed["scheme"]:
+        parsed["scheme"] = "https"
+
+        parsed = (v for v in parsed.values())
+
+    return urlunparse((parsed["scheme"], parsed["netloc"], "", "", "", ""))
+
+
 def make_absolute(link: str, base_url: str) -> _URL:
     """Makes a given link absolute."""
 

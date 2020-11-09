@@ -24,8 +24,8 @@ def test_create_sitemapitem():
 
 def test_create_sitemapitem_path():
     item = SitemapItem(depth=1, url="https://www.getevents.nl/amsterdam/")
-    assert item.path == "/amsterdam"
-    assert item.url == "https://www.getevents.nl/amsterdam"
+    assert item.path == "/amsterdam/"
+    assert item.url == "https://www.getevents.nl/amsterdam/"
     assert item.depth == 1
 
 
@@ -138,7 +138,7 @@ async def test_basesite_digest():
         home.page.css_first("title").text()
         == "Get Events - De leukste Groepsuitjes en Bedrijfsfeesten"
     )
-    assert len(site.sitemap) == 39
+    assert len(site.sitemap) == 40
 
 
 async def test_basesite_digest_redirect_home():
@@ -157,8 +157,8 @@ async def test_basesite_digest_redirect_home():
         site.digest_response(wrong_item, r2)
     print(wrong_item.status_code)
     assert wrong_item.status_code in [301, 302, 308]
-    assert wrong_item.url == "https://www.python.org/download"
-    assert site.sitemap.get("https://www.python.org/downloads")
+    assert wrong_item.url == "https://www.python.org/download/"
+    assert site.sitemap.get("https://www.python.org/downloads/")
 
 
 async def test_basesite_unvisited_url_depth():

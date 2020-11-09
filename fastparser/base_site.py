@@ -51,7 +51,7 @@ class SitemapItem:
 
     @property
     def json(self):
-        export_dict = {"path": self.url}
+        export_dict = {"path": self.url, "status_code": self.status_code}
         export_dict.update(self.data)
         return json.dumps(export_dict)
 
@@ -100,17 +100,15 @@ class BaseSite:
         return await client.get(url)
 
     def digest_response(
-        self, item: SitemapItem, response, add_links_to_sitemap: bool = True
+        self,
+        item: SitemapItem,
+        response: HttpResponse,
+        add_links_to_sitemap: bool = True,
     ):
         self.digested += 1
-        if response.redirect:
-            print(response.url)
-            print(response.redirect.url)
-            item.status_code = response.redirect.status_code
-            item.redirect = response.redirect.url
-            # Create a new SitemapItem from the response.url with the same depth as depth
-            redirect_item = SitemapItem(depth=item.depth, url=response.url)
-            redirect_item.page = BasePage(response.text, response.url)
+        if 300 < response.status_code < 320:
+            item.status_code = response.status_code
+            redirect_item = SitemapItem(url=response.redirect, depth=item.depth)
             self.item_to_sitemap(redirect_item)
             return
 
@@ -120,10 +118,11 @@ class BaseSite:
 
             if add_links_to_sitemap:
                 for a_href in item.page.internal_links:
-                    new_item = SitemapItem(
-                        depth=item.depth + 1, url=a_href.absolute_url
-                    )
-                    self.item_to_sitemap(new_item)
+                    if a_href.absolute_url and not a_href.absolute_url.endswith(".pdf"):
+                        new_item = SitemapItem(
+                            depth=item.depth + 1, url=a_href.absolute_url
+                        )
+                        self.item_to_sitemap(new_item)
 
         else:
             item.status_code = response.status_code
@@ -156,22 +155,34 @@ class BaseSite:
             await asyncio.sleep(sleep)
 
             r = await self.get_url(new_item.url, client)
+
+            self.digest_response(new_item, r, False)
+
+            # gets the new_item or redirected item back
             self.digest_response(new_item, r, add_links_to_sitemap)
-            run = func(self, new_item, r)
+
+            if new_item.page:
+                run = func(self, new_item, r)
+            else:
+                run = None
+                print("No page to func")
+                print(r.url)
 
             # export the page data
-            if export:
+            if export and new_item is not None:
                 self.export_page(new_item)
 
-            # if func return a value break the loop
             if run:
-                break
+                return
 
             # for big sites it is better to delete the pages
             if delete_pages:
                 new_item.page = None
 
             new_item = self.get_unvisited_item(max_depth=max_depth)
+            if not new_item:
+                print("no new item")
+                print(self.sitemap)
 
     async def parse_sitemap(
         self, sitemap_url: str, client, in_url: Optional[str] = None
